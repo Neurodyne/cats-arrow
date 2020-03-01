@@ -79,6 +79,15 @@ object LawsSpec
           check(int, anyF, anyF) { (i, f, g) =>
             assert(left(f, g)(i), equalTo(right(f, g)(i)))
           }
+        },
+        testM("Law5: First application") {
+          def left[A, B, C](f: A => B) = arr(f).first
+
+          def right[A, B, C](f: A => B) = arr(tensor(f, identity[A]).tupled)
+
+          check(int, anyF) { (i, f) =>
+            assert(left(f)((i, ???)), equalTo(right(f)((i, ???))))
+          }
         }
       )
     )
@@ -90,4 +99,11 @@ object Helper {
   val int  = Gen.anyInt
 
   val anyF: Gen[Random, Int => Int] = Gen.function(Gen.anyInt)
+
+  def tensor[A, B, C, D](p: A => B, q: C => D): (A, C) => (B, D) = { (a, c) =>
+    val b = p(a)
+    val d = q(c)
+    (b, d)
+  }
+
 }
