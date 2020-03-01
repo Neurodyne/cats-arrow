@@ -86,9 +86,32 @@ object LawsSpec
 
           check(int, anyF) { (i, f) =>
             val lhs = left(f)((i, 0))
-            val rhs = right(f)((i, 0))
-            // assert(left(f)((i, 0)), equalTo(right(f)((i, 0))))
-            assert(lhs, equalTo(rhs.swap))
+            val rhs = right(f)((0, i)).swap
+            assert(lhs, equalTo(rhs))
+          }
+        },
+        testM("Law6: ") {
+          def left[A, B, C](f: A => B, g: B => C): ((A, C)) => (C, C)  = (arr(f) >>> arr(g)).first[C]
+          def right[A, B, C](f: A => B, g: B => C): ((A, C)) => (C, C) = arr(f).first[C] >>> arr(g).first[C]
+
+          check(int, anyF, anyF) { (i, f, g) =>
+            val lhs = left(f, g)((i, 0))
+            val rhs = right(f, g)((i, 0))
+            assert(lhs, equalTo(rhs))
+          }
+        },
+        testM("Law7: ") {
+
+          def left[A, B, C, D](f: A => B, g: C => D): ((A, C)) => (B, D) =
+            arr(f).first[C] >>> arr(tensor(identity[B], g).tupled)
+
+          def right[A, B, C, D](f: A => B, g: C => D): ((A, C)) => (B, D) =
+            arr(tensor(identity[A], g).tupled) >>> arr(f).first[D]
+
+          check(int, anyF, anyF) { (i, f, g) =>
+            val lhs = left(f, g)((i, 0))
+            val rhs = right(f, g)((i, 0))
+            assert(lhs, equalTo(rhs))
           }
         }
       )
@@ -96,7 +119,6 @@ object LawsSpec
 
 object Helper {
   def arr[A, B](f: A => B) = Arrow[Function1].lift(f)
-  // def swap[A, B](data: (A, B)) = data.swap
 
   val ints = Gen.listOf(Gen.int(-10, 10))
   val int  = Gen.anyInt
