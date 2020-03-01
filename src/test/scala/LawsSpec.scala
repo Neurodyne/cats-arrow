@@ -81,13 +81,14 @@ object LawsSpec
           }
         },
         testM("Law5: First application") {
-          def left[A0, B0, C](f: A0 => B0): (A0, C) => (B0, C) = arr(f).first
-
-          def right[A0, B0, C](f: A0 => B0): (C, A0) => (C, B0) = arr(tensor(identity[C], f).tupled)
+          def left[A, B, C](f: A => B): ((A, C)) => (B, C)  = arr(f).first[C]
+          def right[A, B, C](f: A => B): ((C, A)) => (C, B) = arr(tensor(identity[C], f).tupled)
 
           check(int, anyF) { (i, f) =>
-            assert(left(f)(i), equalTo(right(f)(i)))
-
+            val lhs = left(f)((i, 0))
+            val rhs = right(f)((0, i))
+            // assert(left(f)((i, 0)), equalTo(right(f)((i, 0))))
+            assert(lhs, equalTo(rhs))
           }
         }
       )
@@ -95,11 +96,14 @@ object LawsSpec
 
 object Helper {
   def arr[A, B](f: A => B) = Arrow[Function1].lift(f)
+  // def swap[A, B](data: (A, B)) = data.swap
 
   val ints = Gen.listOf(Gen.int(-10, 10))
   val int  = Gen.anyInt
 
   val anyF: Gen[Random, Int => Int] = Gen.function(Gen.anyInt)
+
+  val add1: (Int => Int) = _ + 1
 
   def tensor[A, B, C, D](p: A => B, q: C => D): (A, C) => (B, D) = { (a, c) =>
     val b = p(a)
