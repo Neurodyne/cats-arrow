@@ -81,12 +81,13 @@ object LawsSpec
           }
         },
         testM("Law5: First application") {
-          def left[A, B, C](f: A => B) = arr(f).first
+          def left[A0, B0, C](f: A0 => B0): (A0, C) => (B0, C) = arr(f).first
 
-          def right[A, B, C](f: A => B) = arr(tensor(f, identity[A]).tupled)
+          def right[A0, B0, C](f: A0 => B0): (C, A0) => (C, B0) = arr(tensor(identity[C], f).tupled)
 
           check(int, anyF) { (i, f) =>
-            assert(left(f)((i, ???)), equalTo(right(f)((i, ???))))
+            assert(left(f)(i), equalTo(right(f)(i)))
+
           }
         }
       )
