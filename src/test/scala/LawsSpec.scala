@@ -86,9 +86,9 @@ object LawsSpec
 
           check(int, anyF) { (i, f) =>
             val lhs = left(f)((i, 0))
-            val rhs = right(f)((0, i))
+            val rhs = right(f)((i, 0))
             // assert(left(f)((i, 0)), equalTo(right(f)((i, 0))))
-            assert(lhs, equalTo(rhs))
+            assert(lhs, equalTo(rhs.swap))
           }
         }
       )
