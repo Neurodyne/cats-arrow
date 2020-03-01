@@ -28,10 +28,10 @@ package laws
 // ~>8 : first f >>> arr fst = arr fst >>> f
 // ~>9 : first(first f) >>> arr assoc = arr assoc >>> first f
 
-// import zio.console._
 import zio.test._
 import zio.test.Assertion._
-// import zio.test.environment._
+import zio.test.check
+
 import cats.arrow.Arrow
 import cats.implicits._
 
@@ -41,62 +41,53 @@ import zio.random.Random
 object LawsSpec
     extends DefaultRunnableSpec(
       suite("9 Arrow Base Laws Spec")(
-        test("Law1: Left Identity") {
-          val left  = arr(identity[Int]) >>> plusOne
-          val right = plusOne
-          assert(left(0), equalTo(right(0)))
+        testM("Law1: Left Identity") {
+          def left[A, B](f: A => B)  = arr(identity[A]) >>> f
+          def right[A, B](f: A => B) = f
+
+          check(int, anyF) { (i, f) =>
+            {
+              // val lef = left(f)(i)
+              // val rig = right(f)(i)
+              // println(s"i = ${i}, left = ${lef} right = ${rig}}")
+              assert(left(f)(i), equalTo(right(f)(i)))
+            }
+          }
+        },
+        testM("Law2: Right Identity") {
+          def left[A, B](f: A => B)  = f >>> arr(identity[B])
+          def right[A, B](f: A => B) = f
+
+          check(int, anyF) { (i, f) =>
+            assert(left(f)(i), equalTo(right(f)(i)))
+          }
+        },
+        testM("Law3: Associativity") {
+          def left[A, B, C, D](f: A => B, g: B => C, h: C => D) = (f >>> g) >>> h
+
+          def right[A, B, C, D](f: A => B, g: B => C, h: C => D) = f >>> (g >>> h)
+
+          check(int, anyF, anyF, anyF) { (i, f, g, h) =>
+            assert(left(f, g, h)(i), equalTo(right(f, g, h)(i)))
+          }
+        },
+        testM("Law4: Distributivity") {
+          def left[A, B, C](f: A => B, g: B => C) = arr(f >>> g)
+
+          def right[A, B, C](f: A => B, g: B => C) = arr(f) >>> arr(g)
+
+          check(int, anyF, anyF) { (i, f, g) =>
+            assert(left(f, g)(i), equalTo(right(f, g)(i)))
+          }
         }
-        // test("Law2: Right Identity") {
-        //   val left  = plusOne >>> arr(identity[Int])
-        //   val right = plusOne
-        //   assert(left(0), equalTo(right(0)))
-        // },
-        // test("Law3: Associativity") {
-        //   val left  = (plusOne >>> mulTwo) >>> minusOne
-        //   val right = plusOne >>> (mulTwo >>> minusOne)
-        //   assert(left(0), equalTo(right(0)))
-        // },
-        // test("Law4: Distributivity") {
-        //   val left  = arr(plusOne >>> mulTwo)
-        //   val right = arr(plusOne) >>> arr(mulTwo)
-        //   assert(left(0), equalTo(right(0)))
-        // },
-        // test("Law5: ") {
-        //   val left  = arr(plusOne)
-        //   val right = ???
-        //   assert(left(0), equalTo(right(0)))
-        // },
-        // test("Law6: ") {
-        //   val left  = ???
-        //   val right = ???
-        //   assert(left(0), equalTo(right(0)))
-        // },
-        // test("Law7: ") {
-        //   val left  = ???
-        //   val right = ???
-        //   assert(left(0), equalTo(right(0)))
-        // },
-        // test("Law8: ") {
-        //   val left  = ???
-        //   val right = ???
-        //   assert(left(0), equalTo(right(0)))
-        // },
-        // test("Law9: ") {
-        //   val left  = ???
-        //   val right = ???
-        //   assert(left(0), equalTo(right(0)))
-        // }
       )
     )
 
 object Helper {
   def arr[A, B](f: A => B) = Arrow[Function1].lift(f)
 
-  // def plusOne(in: Int) = in + 1
-  val plusOne  = (_: Int) + 1
-  val minusOne = (_: Int) - 1
-  val mulTwo   = (_: Int) * 2
+  val ints = Gen.listOf(Gen.int(-10, 10))
+  val int  = Gen.anyInt
 
-  // def anyIntFunction(): Gen[Random, Int => Boolean] = Gen.function(Gen.boolean)
-  def anyF(): Gen[Random, Int => Int] = Gen.function(Gen.anyInt)
+  val anyF: Gen[Random, Int => Int] = Gen.function(Gen.anyInt)
 }
