@@ -1,5 +1,3 @@
-import Versions._
-
 resolvers ++= Seq(
   Resolver.mavenLocal,
   Resolver.sonatypeRepo("releases"),
@@ -14,19 +12,18 @@ lazy val commonSettings = Seq(
 )
 
 lazy val catsDeps = libraryDependencies ++= Seq(
-  "org.typelevel" %% "cats-core" % catsVersion
+  "org.typelevel" %% "cats-core" % Version.cats
 )
 
 lazy val zioDeps = libraryDependencies ++= Seq(
-  // "dev.zio" %% "zio"          % zioVersion,
-  "dev.zio" %% "zio-test"     % zioVersion % "test",
-  "dev.zio" %% "zio-test-sbt" % zioVersion % "test"
+  "dev.zio" %% "zio-test"     % Version.zio % "test",
+  "dev.zio" %% "zio-test-sbt" % Version.zio % "test"
 )
 
 lazy val root = (project in file("."))
   .settings(
     organization := "Neurodyne",
-    name := "zio-top",
+    name := "cats-arrow",
     version := "0.0.1",
     scalaVersion := "2.13.1",
     maxErrors := 3,
@@ -41,3 +38,5 @@ addCommandAlias("rel", "reload")
 addCommandAlias("com", "all compile test:compile it:compile")
 addCommandAlias("fix", "all compile:scalafix test:scalafix")
 addCommandAlias("fmt", "all scalafmtSbt scalafmtAll")
+
+scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.3.2"

@@ -1,5 +1,5 @@
-object Versions {
-  val zioVersion     = "1.0.0-RC17"
-  val catsVersion    = "2.1.1"
-  val ZioCatsVersion = "2.0.0.0-RC10"
+object Version {
+  val zio            = "1.0.0-RC18-2"
+  val cats           = "2.2.0-M1"
+  val zioInteropCats = "2.0.0.0-RC12"
 }
