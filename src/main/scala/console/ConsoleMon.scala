@@ -3,6 +3,7 @@ package console
 import cats.syntax.flatMap._
 import cats.syntax.functor._
 import cats.{ Monad, StackSafeMonad }
+import com.github.ghik.silencer.silent
 
 sealed trait ConsoleM[X]
 
@@ -28,6 +29,7 @@ object ConsoleM {
       _ <- putLine(x + y)
     } yield x + y
 
+  @silent("pattern var")
   def countGets[A](cm: ConsoleM[A]): Int = cm match {
     case Pure(_)    => 0
     case GetLine    => 1

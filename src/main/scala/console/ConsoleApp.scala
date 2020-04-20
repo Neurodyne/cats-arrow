@@ -2,6 +2,7 @@ package console
 
 import cats.syntax.apply._
 import cats.{ Applicative }
+import com.github.ghik.silencer.silent
 
 sealed trait ConsoleA[X]
 
@@ -27,6 +28,7 @@ object ConsoleA {
     case Ap(f, x)   => countGets(f) + countGets(x)
   }
 
+  @silent("dead code")
   def echo2: ConsoleA[Unit] = {
     (getLine, getLine).tupled
     putLine(???)

@@ -1,3 +1,5 @@
+import BuildHelper._
+
 resolvers ++= Seq(
   Resolver.mavenLocal,
   Resolver.sonatypeRepo("releases"),
@@ -9,6 +11,12 @@ lazy val commonSettings = Seq(
   scalacOptions --= Seq(
     "-Xfatal-warnings"
   )
+)
+
+lazy val commonDeps = libraryDependencies ++= Seq(
+  ("com.github.ghik" % "silencer-lib" % Version.silencer % Provided)
+    .cross(CrossVersion.full),
+  compilerPlugin(("com.github.ghik" % "silencer-plugin" % Version.silencer).cross(CrossVersion.full))
 )
 
 lazy val catsDeps = libraryDependencies ++= Seq(
@@ -28,15 +36,26 @@ lazy val root = (project in file("."))
     scalaVersion := "2.13.1",
     maxErrors := 3,
     commonSettings,
+    commonDeps,
     catsDeps,
     zioDeps,
     testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
   )
+
+lazy val bench = (project in file("bench"))
+  .settings(commonSettings, catsDeps, zioDeps)
+  .settings(stdSettings("bench"))
+  .enablePlugins(JmhPlugin, JCStressPlugin)
+  .dependsOn(root)
 
 // Aliases
 addCommandAlias("rel", "reload")
 addCommandAlias("com", "all compile test:compile it:compile")
 addCommandAlias("fix", "all compile:scalafix test:scalafix")
 addCommandAlias("fmt", "all scalafmtSbt scalafmtAll")
+
+// Bench
+addCommandAlias("arrBench", "bench/jmh:run -i 1 -wi 1 -f1 -t2 .*ArrBenchmark")
+addCommandAlias("grBench", "bench/jmh:run -i 2 -wi 2 -f1 -t2 .*GRBenchmark")
 
 scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.3.2"
