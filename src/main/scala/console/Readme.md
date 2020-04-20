@@ -9,4 +9,4 @@
 We will use Cats categories for all three implementations
 
 #### Credits
-This example is created by @odomontois and was taken from [here](slides.com/olegnizhnik/assymondark)
+This example was created by @odomontois and was taken from [here](https://slides.com/olegnizhnik/assymondark)
