@@ -55,7 +55,7 @@ addCommandAlias("fix", "all compile:scalafix test:scalafix")
 addCommandAlias("fmt", "all scalafmtSbt scalafmtAll")
 
 // Bench
-addCommandAlias("arrBench", "bench/jmh:run -i 1 -wi 1 -f1 -t2 .*ArrBenchmark")
-addCommandAlias("grBench", "bench/jmh:run -i 2 -wi 2 -f1 -t2 .*GRBenchmark")
+addCommandAlias("arrBench", "bench/jmh:run -i 2 -wi 2 -f1 -t1 .*ArrBenchmark")
+addCommandAlias("grBench", "bench/jmh:run -i 2 -wi 2 -f1 -t1 .*GRBenchmark")
 
 scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % "0.3.2"

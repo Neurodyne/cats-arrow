@@ -2,7 +2,7 @@ import sbt._
 import sbt.Keys._
 //import sbtbuildinfo._
 //import BuildInfoKeys._
-import scalafix.sbt.ScalafixPlugin.autoImport.scalafixSemanticdb
+//import scalafix.sbt.ScalafixPlugin.autoImport.scalafixSemanticdb
 
 object BuildHelper {
   private val Scala212        = "2.12.10"

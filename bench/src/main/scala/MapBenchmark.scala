@@ -18,7 +18,11 @@ class ArrBenchmark {
   def rmap = tup.rmap(addOne >>> mulTwo)
 
   @Benchmark
-  def bmap = tup.bmap(addOne >>> mulTwo, identity[Int] _ >>> mulTwo)
+  def rmapBM = tup.bifoldMap(addOne >>> mulTwo, addOne >>> mulTwo)
+
+  @Benchmark
+  def bmap = tup.bmap(addOne >>> mulTwo, addOne >>> mulTwo)
+
 }
 
 @State(Scope.Thread)

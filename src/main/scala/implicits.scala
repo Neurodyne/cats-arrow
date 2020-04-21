@@ -11,8 +11,8 @@ object implicits {
     def rmap[C](f: B => C): Tuple2[A, C]                     = tup.swap.leftMap(f).swap
     def bmap[A1, B1](f: A => A1, g: B => B1): Tuple2[A1, B1] = tup.bimap(f, g)
 
-    // def rmapBfold[A1, B1](f: A => A1, g: B => B1) = tup.bifoldMap(f, g)
-    // def rmapBfold[A1 <: Numeric[A1], B1 <: Numeric[B1]](f: A => A1, g: B => B1) = tup.bifoldMap(f, g)
+    // def rightMap[C](tup: Tuple2[A, B])(f: B => C) = tup.bifoldMap(identity[A], f)
+
   }
 
   implicit class userOps(user: UserClass) {
@@ -21,8 +21,6 @@ object implicits {
     def lmap(f: UUID => Int)                            = tup.leftMap(f)
     def rmap(f: List[Int] => List[Int])                 = tup.swap.leftMap(f).swap
     def bmap(f: UUID => Int, g: List[Int] => List[Int]) = tup.bimap(f, g)
-
-    //def rmapBfold[A, _, C](f: (A, _) => C) = bifoldMap(identity[A], f(_))
 
   }
 }
