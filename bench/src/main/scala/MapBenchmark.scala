@@ -12,17 +12,16 @@ import org.openjdk.jmh.annotations._
 @OutputTimeUnit(TimeUnit.SECONDS)
 class ArrBenchmark {
   @Benchmark
-  def lmap = tup.lmap(addOne >>> mulTwo)
+  def lmap = tup.lmap(combined)
 
   @Benchmark
-  def rmap = tup.rmap(addOne >>> mulTwo)
+  def rmapComposed = tup.rmap(combined)
 
   @Benchmark
-  def rmapBM = tup.bifoldMap(addOne >>> mulTwo, addOne >>> mulTwo)
+  def bmap = tup.bmap(identity[Int], combined)
 
   @Benchmark
-  def bmap = tup.bmap(addOne >>> mulTwo, addOne >>> mulTwo)
-
+  def rmapBM = tup.bifoldMap(identity[Int], combined)
 }
 
 @State(Scope.Thread)
@@ -42,10 +41,11 @@ class GRBenchmark {
 object Helper {
 
   // Arrow Bench
-  val addOne = (_: Int) + 1
-  val mulTwo = (_: Int) * 2
+  val addOne   = (_: Int) + 1
+  val mulTwo   = (_: Int) * 2
+  val combined = addOne >>> mulTwo
 
-  val tup = (-1, 2)
+  val tup = (1, 1)
 
   // GR bench
   def procUUID(id: UUID): Int              = id.hashCode()
@@ -54,4 +54,17 @@ object Helper {
   val list = Range(1, 10000).toList
   val user = UserClass(UUID.randomUUID, list)
 
+}
+
+object App0 extends App {
+
+  val res0 = tup.lmap(combined)
+  val res1 = tup.rmap(combined)
+  val res2 = tup.bimap(identity[Int], combined)
+  val res3 = tup.bifoldMap(identity[Int], combined)
+
+  println(res0)
+  println(res1)
+  println(res2)
+  println(res3)
 }
